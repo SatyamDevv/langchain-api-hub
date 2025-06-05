@@ -1,6 +1,21 @@
 """
 Production settings for service_hub project.
-This file contains settings specifically for Vercel deployment.
+This file            logger.warning("dj_database_url not available, falling back to manual config")
+    
+    # Second priority: Manual Supabase configuration with Transaction Pooler (IPv4 compatible)
+    if all([
+        os.getenv("SUPABASE_DB_HOST"),
+        os.getenv("SUPABASE_DB_PASSWORD"),
+    ]):
+        # Read transaction pooler configuration from environment variables
+        db_host = os.getenv("SUPABASE_DB_HOST")
+        db_port = os.getenv("SUPABASE_DB_PORT", "6543")
+        db_user = os.getenv("SUPABASE_DB_USER", "postgres")
+        
+        logger.info(f"Using Supabase transaction pooler: {db_host}:{db_port}")
+        logger.info(f"Transaction pooler is IPv4 compatible and optimized for serverless")
+        
+        return {tings specifically for Vercel deployment.
 """
 
 from .settings import *
@@ -55,34 +70,28 @@ def get_supabase_database_config():
                 'connect_timeout': 10,
                 'application_name': 'django_vercel_app',
                 'options': '-c default_transaction_isolation=read_committed -c timezone=UTC',
-            }
+            }           
             return config
         except ImportError:
             logger.warning("dj_database_url not available, falling back to manual config")
     
-    # Second priority: Manual Supabase configuration
+    # Second priority: Manual Supabase configuration with Transaction Pooler (IPv4 compatible)
     if all([
         os.getenv("SUPABASE_DB_HOST"),
         os.getenv("SUPABASE_DB_PASSWORD"),
     ]):
+        # Read transaction pooler configuration from environment variables
         db_host = os.getenv("SUPABASE_DB_HOST")
-        db_port = os.getenv("SUPABASE_DB_PORT", "5432")
+        db_port = os.getenv("SUPABASE_DB_PORT", "6543")
+        db_user = os.getenv("SUPABASE_DB_USER", "postgres")
         
-        # Use connection pooler for production (recommended for serverless)
-        if os.getenv('VERCEL') or os.getenv('RAILWAY_ENVIRONMENT'):
-            # Auto-detect and use Supabase connection pooler
-            if 'supabase.co' in db_host and 'db.' in db_host:
-                # Replace db. with aws-0-us-east-1.pooler. for US East region
-                # You may need to adjust the region based on your Supabase project
-                pooler_host = db_host.replace('db.', 'aws-0-us-east-1.pooler.')
-                logger.info(f"Using Supabase connection pooler: {pooler_host}")
-                db_host = pooler_host
-                db_port = "6543"  # Default pooler port
+        logger.info(f"Using Supabase transaction pooler: {db_host}:{db_port}")
+        logger.info(f"Transaction pooler is IPv4 compatible and optimized for serverless")
         
         return {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv("SUPABASE_DB_NAME", "postgres"),
-            'USER': os.getenv("SUPABASE_DB_USER", "postgres"),
+            'USER': db_user,
             'PASSWORD': os.getenv("SUPABASE_DB_PASSWORD"),
             'HOST': db_host,
             'PORT': db_port,
@@ -91,11 +100,12 @@ def get_supabase_database_config():
                 'connect_timeout': 10,
                 'application_name': 'django_vercel_app',
                 'options': '-c default_transaction_isolation=read_committed -c timezone=UTC',
-                'keepalives_idle': 600,
+                # Optimized for transaction pooler - shorter keepalives
+                'keepalives_idle': 300,
                 'keepalives_interval': 30,
                 'keepalives_count': 3,
             },
-            'CONN_MAX_AGE': 60,  # Short-lived connections for serverless
+            'CONN_MAX_AGE': 30,  # Shorter for transaction pooler
             'CONN_HEALTH_CHECKS': True,
         }
     
