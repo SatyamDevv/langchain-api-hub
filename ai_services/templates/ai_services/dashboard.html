@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+    <title>AI Services Hub - Complete Platform</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f7fa;
+        min-height: 100vh;
+        line-height: 1.6;
+      } /* Modern Header */
+      .modern-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .logo {
+        font-size: 2rem;
+        font-weight: bold;
+        background: linear-gradient(45deg, #fff, #e0e0e0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .tagline {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-left: 10px;
+      }
+      .user-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+
+      .nav-link {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 8px 16px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        font-size: 0.9rem;
+      }
+
+      .auth-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .auth-btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        font-size: 0.9rem;
+      }
+
+      .auth-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      /* Main Content Area */
+      .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      /* Dashboard Section */
+      .dashboard-section {
+        display: none;
+        margin-bottom: 40px;
+      }
+
+      .dashboard-section.active {
+        display: block;
+      }
+
+      .dashboard-welcome {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .dashboard-welcome h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        border-left: 4px solid #667eea;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 10px;
+      }
+
+      .stat-label {
+        color: #666;
+        font-weight: 500;
+      }
+
+      .api-key-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+      }
+
+      .api-key-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .api-key-display {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        word-break: break-all;
+        margin-bottom: 15px;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      /* Auth Notice Styles */
+      .auth-notice {
+        margin-bottom: 30px;
+      }
+
+      .notice-card {
+        background: #fff3cd;
+        border: 2px solid #ffeaa7;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.1);
+      }
+
+      .notice-card.success {
+        background: #d1edff;
+        border-color: #74b9ff;
+      }
+
+      .notice-icon {
+        font-size: 2rem;
+        flex-shrink: 0;
+      }
+
+      .notice-content h3 {
+        margin: 0 0 8px 0;
+        color: #333;
+        font-size: 1.1rem;
+      }
+
+      .notice-content p {
+        margin: 0;
+        color: #555;
+        line-height: 1.5;
+      }
+
+      .auth-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .auth-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+
+      /* Services Section */
+      .services-section {
+        display: block;
+      }
+
+      .services-section.active {
+        display: block;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .section-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+      }
+
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 30px;
+      }
+
+      .service-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+      }
+
+      .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .service-title {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .service-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: white;
+      }
+
+      .summarization .service-icon {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .sentiment .service-icon {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+
+      .keywords .service-icon {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+
+      .classification .service-icon {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+      }
+
+      .language .service-icon {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      }
+
+      .translation .service-icon {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      }
+
+      .qa .service-icon {
+        background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+      }
+
+      .generation .service-icon {
+        background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+      }
+
+      .endpoint-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #007bff;
+      }
+
+      .endpoint-info code {
+        background: #007bff;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-family: "Courier New", monospace;
+        font-weight: bold;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .form-group textarea,
+      .form-group select,
+      .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+        resize: vertical;
+      }
+
+      .form-group textarea:focus,
+      .form-group select:focus,
+      .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .service-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+
+      .service-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .service-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .result {
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        display: none;
+      }
+
+      .result.success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+
+      .result.error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      }
+
+      .result h4 {
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+      }
+
+      .result pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-family: "Courier New", monospace;
+        background: rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        border-radius: 5px;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        margin-top: 10px;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .alert {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+      }
+
+      .alert-error {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+      } /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .header-container {
+          flex-direction: column;
+          gap: 15px;
+          align-items: center;
+        }
+
+        .logo-section {
+          text-align: center;
+        }
+
+        .nav-links {
+          gap: 15px;
+          justify-content: center;
+        }
+
+        .user-actions {
+          gap: 15px;
+        }
+
+        .services-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Modern Header -->
+    <header class="modern-header">
+      <div class="header-container">
+        <div class="logo-section">
+          <div class="logo">🤖 AI Hub</div>
+          <div class="tagline">Advanced AI Services Platform</div>
+        </div>
+
+        <div class="user-actions">
+          {% if user.is_authenticated %}
+          <div class="user-info">
+            <span>👋 {{ user.username }}</span>
+          </div>
+          <a href="{% url 'logout' %}" class="auth-btn">Logout</a>
+          {% else %}
+          <div class="auth-buttons">
+            <a href="{% url 'login' %}" class="auth-btn">Login</a>
+            <a href="{% url 'signup' %}" class="auth-btn">Sign Up</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+      <!-- Messages -->
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %} {% endif %}
+
+      <!-- Dashboard Section -->
+      {% if user.is_authenticated %}
+      <section id="dashboard-section" class="dashboard-section active">
+        <div class="dashboard-welcome">
+          <h1>Welcome to Your Dashboard</h1>
+          <p>Manage your AI services, track usage, and access your API keys</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number">
+              {% if api_key %}{{ api_key.usage_count }}{% else %}0{% endif %}
+            </div>
+            <div class="stat-label">API Calls Made</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">
+              {% if api_key %}{{ api_key.created_at|date:"M d" }}{% else %}N/A{% endif %}
+            </div>
+            <div class="stat-label">Account Created</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">
+              {% if api_key and api_key.is_active %}Active{% else %}Inactive{% endif %}
+            </div>
+            <div class="stat-label">API Status</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">8</div>
+            <div class="stat-label">Available Services</div>
+          </div>
+        </div>
+
+        <div class="api-key-card">
+          <div class="api-key-header">
+            <h3>🔑 Your API Key</h3>
+          </div>
+          <div class="api-key-display" id="api-key-display">
+            {% if api_key %}{{ api_key.key }}{% else %}No API key available{% endif %}
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-primary" onclick="copyAPIKey()">
+              📋 Copy Key
+            </button>
+            <button class="btn btn-secondary" onclick="regenerateAPIKey()">
+              🔄 Regenerate Key
+            </button>
+            <a
+              href="#"
+              class="btn btn-primary"
+              onclick="showSection('services')"
+            >
+              🚀 Try Services
+            </a>
+          </div>
+        </div>
+      </section>
+      {% endif %}
+      <!-- Services Section -->
+      <section
+        id="services-section"
+        class="services-section {% if not user.is_authenticated %}active{% endif %}"
+      >
+        <div class="section-header">
+          {% if not user.is_authenticated %}
+          <div class="auth-notice">
+            <div class="notice-card">
+              <div class="notice-icon">🔐</div>
+              <div class="notice-content">
+                <h3>API Key Required</h3>
+                <p>
+                  All API endpoints require authentication with a valid API key.
+                  <a href="{% url 'login' %}" class="auth-link">Login</a> or
+                  <a href="{% url 'signup' %}" class="auth-link">Sign up</a> to
+                  get your API key and start using our services.
+                </p>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="auth-notice">
+            <div class="notice-card success">
+              <div class="notice-icon">✅</div>
+              <div class="notice-content">
+                <h3>Authentication Active</h3>
+                <p>
+                  Your API key is automatically included in all requests below.
+                  You can also use your API key programmatically by including it
+                  in the <code>X-API-Key</code> header.
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="services-grid">
+          <!-- Text Summarization Service -->
+          <div class="service-card summarization">
+            <div class="service-title">
+              <div class="service-icon">📝</div>
+              Text Summarization
+            </div>
+
+            <div class="endpoint-info">
+              <strong>Endpoint:</strong> <code>POST /summarize/</code>
+            </div>
+
+            <form id="summarization-form">
+              <div class="form-group">
+                <label for="summarization-text">Text to Summarize:</label>
+                <textarea
+                  id="summarization-text"
+                  rows="4"
+                  placeholder="Enter the text you want to summarize..."
+                  required
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label for="summarization-method">Method:</label>
+                <select id="summarization-method" required>
+                  <option value="stuff">Stuff (Simple)</option>
+                  <option value="map_reduce">Map Reduce (Large texts)</option>
+                  <option value="refine">Refine (Iterative)</option>
+                </select>
+              </div>
+              <button type="submit" class="service-btn">Summarize Text</button>
+
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>Processing...</p>
+              </div>
+
+              <div class="result" id="summarization-result">
+                <h4>Summary:</h4>
+                <pre id="summarization-output"></pre>
+              </div>
+            </form>
+          </div>
+
+          <!-- Sentiment Analysis Service -->
+          <div class="service-card sentiment">
+            <div class="service-title">
+              <div class="service-icon">😊</div>
+              Sentiment Analysis
+            </div>
+
+            <div class="endpoint-info">
+              <strong>Endpoint:</strong> <code>POST /sentiment/</code>
+            </div>
+
+            <form id="sentiment-form">
+              <div class="form-group">
+                <label for="sentiment-text">Text to Analyze:</label>
+                <textarea
+                  id="sentiment-text"
+                  rows="4"
+                  placeholder="Enter the text you want to analyze for sentiment..."
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="service-btn">
+                Analyze Sentiment
+              </button>
+
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>Analyzing...</p>
+              </div>
+
+              <div class="result" id="sentiment-result">
+                <h4>Sentiment:</h4>
+                <pre id="sentiment-output"></pre>
+              </div>
+            </form>
+          </div>
+
+          <!-- Keyword Extraction Service -->
+          <div class="service-card keywords">
+            <div class="service-title">
+              <div class="service-icon">🔑</div>
+              Keyword Extraction
+            </div>
+
+            <div class="endpoint-info">
+              <strong>Endpoint:</strong> <code>POST /keywords/</code>
+            </div>
+
+            <form id="keywords-form">
+              <div class="form-group">
+                <label for="keywords-text"
+                  >Text to Extract Keywords From:</label
+                >
+                <textarea
+                  id="keywords-text"
+                  rows="4"
+                  placeholder="Enter the text you want to extract keywords from..."
+                  required
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label for="keywords-count">Number of Keywords:</label>
+                <input
+                  type="number"
+                  id="keywords-count"
+                  min="1"
+                  max="20"
+                  value="5"
+                  required
+                />
+              </div>
+              <button type="submit" class="service-btn">
+                Extract Keywords
+              </button>
+
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>Extracting...</p>
+              </div>
+              <div class="result" id="keywords-result">
+                <h4>Keywords:</h4>
+                <pre id="keywords-output"></pre>
+              </div>
+            </form>
+          </div>
+
+          <!-- Text Classification Service -->
+          <div class="service-card classification">
+            <div class="service-title">
+              <div class="service-icon">🏷️</div>
+              Text Classification
+            </div>
+
+            <div class="endpoint-info">
+              <strong>Endpoint:</strong> <code>POST /classify/</code>
+            </div>
+
+            <form id="classification-form">
+              <div class="form-group">
+                <label for="classification-text">Text to Classify:</label>
+                <textarea
+                  id="classification-text"
+                  rows="4"
+                  placeholder="Enter the text you want to classify..."
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="service-btn">Classify Text</button>
+
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>Classifying...</p>
+              </div>
+
+              <div class="result" id="classification-result">
+                <h4>Classification:</h4>
+                <pre id="classification-output"></pre>
+              </div>
+            </form>
+          </div>
+
+          <!-- Language Detection Service -->
+          <div class="service-card language">
+            <div class="service-title">
+              <div class="service-icon">🌐</div>
+              Language Detection
+            </div>
+
+            <div class="endpoint-info">
+              <strong>Endpoint:</strong> <code>POST /detect-language/</code>
+            </div>
+
+            <form id="language-form">
+              <div class="form-group">
+                <label for="language-text">Text to Analyze:</label>
+                <textarea
+                  id="language-text"
+                  rows="4"
+                  placeholder="Enter text in any language..."
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="service-btn">Detect Language</button>
+
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>Detecting...</p>
+              </div>
+
+              <div class="result" id="language-result">
+                <h4>Language:</h4>
+                <pre id="language-output"></pre>
+              </div>
+            </form>
+          </div>
+
+          <!-- Text Translation Service -->
+          <div class="service-card translation">
+            <div class="service-title">
+              <div class="service-icon">🔄</div>
+              Text Translation
+            </div>
+
+            <div class="endpoint-info">
+              <strong>Endpoint:</strong> <code>POST /translate/</code>
+            </div>
+
+            <form id="translation-form">
+              <div class="form-group">
+                <label for="translation-text">Text to Translate:</label>
+                <textarea
+                  id="translation-text"
+                  rows="4"
+                  placeholder="Enter text to translate..."
+                  required
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label for="target-language">Target Language:</label>
+                <select id="target-language" required>
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Italian">Italian</option>
+                  <option value="Portuguese">Portuguese</option>
+                  <option value="Chinese">Chinese</option>
+                  <option value="Japanese">Japanese</option>
+                  <option value="Korean">Korean</option>
+                  <option value="Hindi">Hindi</option>
+                  <option value="Arabic">Arabic</option>
+                  <option value="Russian">Russian</option>
+                </select>
+              </div>
+              <button type="submit" class="service-btn">Translate Text</button>
+
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>Translating...</p>
+              </div>
+
+              <div class="result" id="translation-result">
+                <h4>Translation:</h4>
+                <pre id="translation-output"></pre>
+              </div>
+            </form>
+          </div>
+
+          <!-- Question Answering Service -->
+          <div class="service-card qa">
+            <div class="service-title">
+              <div class="service-icon">❓</div>
+              Question Answering
+            </div>
+
+            <div class="endpoint-info">
+              <strong>Endpoint:</strong> <code>POST /answer/</code>
+            </div>
+
+            <form id="qa-form">
+              <div class="form-group">
+                <label for="qa-question">Question:</label>
+                <textarea
+                  id="qa-question"
+                  rows="2"
+                  placeholder="Ask any question..."
+                  required
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label for="qa-context">Context (Optional):</label>
+                <textarea
+                  id="qa-context"
+                  rows="4"
+                  placeholder="Provide context for better answers (optional)..."
+                ></textarea>
+              </div>
+              <button type="submit" class="service-btn">Get Answer</button>
+
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>Thinking...</p>
+              </div>
+
+              <div class="result" id="qa-result">
+                <h4>Answer:</h4>
+                <pre id="qa-output"></pre>
+              </div>
+            </form>
+          </div>
+
+          <!-- Content Generation Service -->
+          <div class="service-card generation">
+            <div class="service-title">
+              <div class="service-icon">✨</div>
+              Content Generation
+            </div>
+
+            <div class="endpoint-info">
+              <strong>Endpoint:</strong> <code>POST /generate/</code>
+            </div>
+
+            <form id="generation-form">
+              <div class="form-group">
+                <label for="generation-prompt">Content Prompt:</label>
+                <textarea
+                  id="generation-prompt"
+                  rows="3"
+                  placeholder="Describe what content you want to generate..."
+                  required
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label for="content-type">Content Type:</label>
+                <select id="content-type" required>
+                  <option value="general">General</option>
+                  <option value="email">Email</option>
+                  <option value="story">Story</option>
+                  <option value="blog">Blog Post</option>
+                  <option value="social_media">Social Media</option>
+                  <option value="product_description">
+                    Product Description
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="max-length">Max Length (words):</label>
+                <input
+                  type="number"
+                  id="max-length"
+                  min="50"
+                  max="2000"
+                  value="500"
+                  required
+                />
+              </div>
+              <button type="submit" class="service-btn">
+                Generate Content
+              </button>
+
+              <div class="loading">
+                <div class="spinner"></div>
+                <p>Generating...</p>
+              </div>
+
+              <div class="result" id="generation-result">
+                <h4>Generated Content:</h4>
+                <pre id="generation-output"></pre>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // Navigation functionality
+      function showSection(sectionName) {
+        // Hide all sections
+        const dashboardSection = document.getElementById('dashboard-section');
+        const servicesSection = document.getElementById('services-section');
+
+        if (dashboardSection) dashboardSection.classList.remove('active');
+        servicesSection.classList.remove('active');
+
+        // Remove active class from all nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+          link.classList.remove('active');
+        });
+
+        // Show selected section and activate nav link
+        if (sectionName === 'dashboard' && dashboardSection) {
+          dashboardSection.classList.add('active');
+          document.querySelector('[onclick="showSection(\'dashboard\')"]').classList.add('active');
+        } else if (sectionName === 'services') {
+          servicesSection.classList.add('active');
+          document.querySelector('[onclick="showSection(\'services\')"]').classList.add('active');
+        }
+      }
+
+      // Function to get CSRF token
+      function getCSRFToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta) {
+          return meta.getAttribute("content");
+        }
+
+        const cookieValue = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("csrftoken="))
+          ?.split("=")[1];
+        return cookieValue;
+      }
+
+      // Generic function to handle API calls
+      async function makeAPICall(endpoint, data, formId, resultId, outputId) {
+        const form = document.getElementById(formId);
+        const result = document.getElementById(resultId);
+        const output = document.getElementById(outputId);
+        const loading = form.querySelector(".loading");
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        // Show loading, hide result
+        loading.style.display = "block";
+        result.style.display = "none";
+        submitBtn.disabled = true;
+
+        const headers = {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),
+        };
+
+        // Get API key if user is authenticated
+        {% if user.is_authenticated %}
+          const apiKeyDisplay = document.getElementById('api-key-display');
+          if (apiKeyDisplay) {
+            const apiKey = apiKeyDisplay.textContent.trim();
+            headers["X-API-Key"] = apiKey;
+          }
+        {% endif %}
+
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(data),
+          });
+
+          const responseData = await response.json();
+
+          if (response.ok) {
+            output.textContent = JSON.stringify(responseData, null, 2);
+            result.className = "result success";
+          } else {
+            output.textContent = JSON.stringify(responseData, null, 2);
+            result.className = "result error";
+          }
+
+          result.style.display = "block";
+        } catch (error) {
+          output.textContent = `Error: ${error.message}`;
+          result.className = "result error";
+          result.style.display = "block";
+        } finally {
+          loading.style.display = "none";
+          submitBtn.disabled = false;
+        }
+      }
+
+      function copyAPIKey() {
+        const apiKeyElement = document.getElementById("api-key-display");
+        if (!apiKeyElement) return;
+
+        const apiKey = apiKeyElement.textContent.trim();
+
+        navigator.clipboard.writeText(apiKey).then(function () {
+          const btn = event.target;
+          const originalText = btn.textContent;
+          btn.textContent = "✅ Copied!";
+          btn.style.background = "linear-gradient(135deg, #28a745 0%, #20c997 100%)";
+
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+          }, 2000);
+        });
+      }
+
+      function regenerateAPIKey() {
+        if (
+          confirm(
+            "Are you sure you want to regenerate your API key? Your old key will stop working immediately."
+          )
+        ) {
+          fetch('{% url "regenerate_api_key" %}', {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRFToken(),
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                document.getElementById("api-key-display").textContent = data.new_key;
+
+                // Show success message
+                const alertDiv = document.createElement("div");
+                alertDiv.className = "alert alert-success";
+                alertDiv.textContent = data.message;
+                document.querySelector(".main-container").insertBefore(
+                  alertDiv,
+                  document.querySelector(".main-container").firstChild
+                );
+
+                // Remove alert after 5 seconds
+                setTimeout(() => {
+                  alertDiv.remove();
+                }, 5000);
+              } else {
+                alert("Error: " + data.message);
+              }
+            })
+            .catch((error) => {
+              alert("Error regenerating API key: " + error.message);
+            });
+        }
+      }
+
+      // Form handlers for all services
+      document.getElementById("summarization-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = document.getElementById("summarization-text").value;
+        const method = document.getElementById("summarization-method").value;
+
+        await makeAPICall(
+          "/summarize/",
+          { text, method },
+          "summarization-form",
+          "summarization-result",
+          "summarization-output"
+        );
+      });
+
+      document.getElementById("sentiment-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = document.getElementById("sentiment-text").value;
+
+        await makeAPICall(
+          "/sentiment/",
+          { text },
+          "sentiment-form",
+          "sentiment-result",
+          "sentiment-output"
+        );
+      });
+
+      document.getElementById("keywords-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = document.getElementById("keywords-text").value;
+        const count = parseInt(document.getElementById("keywords-count").value);
+
+        await makeAPICall(
+          "/keywords/",
+          { text, count },
+          "keywords-form",
+          "keywords-result",
+          "keywords-output"
+        );
+      });
+
+      document.getElementById("classification-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = document.getElementById("classification-text").value;
+
+        await makeAPICall(
+          "/classify/",
+          { text },
+          "classification-form",
+          "classification-result",
+          "classification-output"
+        );
+      });
+
+      document.getElementById("language-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = document.getElementById("language-text").value;
+
+        await makeAPICall(
+          "/detect-language/",
+          { text },
+          "language-form",
+          "language-result",
+          "language-output"
+        );
+      });
+
+      document.getElementById("translation-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const text = document.getElementById("translation-text").value;
+        const target_language = document.getElementById("target-language").value;
+
+        await makeAPICall(
+          "/translate/",
+          { text, target_language },
+          "translation-form",
+          "translation-result",
+          "translation-output"
+        );
+      });
+
+      document.getElementById("qa-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const question = document.getElementById("qa-question").value;
+        const context = document.getElementById("qa-context").value;
+
+        const data = { question };
+        if (context.trim()) {
+          data.context = context;
+        }
+
+        await makeAPICall(
+          "/answer/",
+          data,
+          "qa-form",
+          "qa-result",
+          "qa-output"
+        );
+      });
+
+      document.getElementById("generation-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const prompt_text = document.getElementById("generation-prompt").value;
+        const content_type = document.getElementById("content-type").value;
+        const max_length = parseInt(document.getElementById("max-length").value);
+
+        await makeAPICall(
+          "/generate/",
+          { prompt_text, content_type, max_length },
+          "generation-form",
+          "generation-result",
+          "generation-output"
+        );
+      });
+
+      // Add sample data for testing
+      document.addEventListener("DOMContentLoaded", () => {
+        // Sample text for summarization
+        document.getElementById("summarization-text").value =
+          "Artificial intelligence (AI) is intelligence demonstrated by machines, as opposed to natural intelligence displayed by animals including humans. AI research has been defined as the field of study of intelligent agents, which refers to any system that perceives its environment and takes actions that maximize its chance of achieving its goals.";
+
+        // Sample text for sentiment analysis
+        document.getElementById("sentiment-text").value =
+          "I absolutely love this new product! It's amazing and works perfectly. The customer service was also fantastic and very helpful.";
+
+        // Sample text for keyword extraction
+        document.getElementById("keywords-text").value =
+          "Machine learning is a subset of artificial intelligence that focuses on algorithms and statistical models that computer systems use to perform specific tasks without explicit instructions.";
+
+        // Sample text for classification
+        document.getElementById("classification-text").value =
+          "The new iPhone 15 Pro features a titanium design, A17 Pro chip, and advanced camera system with 5x optical zoom.";
+
+        // Sample text for language detection
+        document.getElementById("language-text").value =
+          "Bonjour! Comment allez-vous aujourd'hui? J'espère que vous passez une excellente journée.";
+
+        // Sample text for translation
+        document.getElementById("translation-text").value =
+          "Hello! How are you doing today? I hope you're having a wonderful day.";
+
+        // Sample question and context for Q&A
+        document.getElementById("qa-question").value =
+          "What are the benefits of machine learning?";
+        document.getElementById("qa-context").value =
+          "Machine learning is a subset of artificial intelligence that enables computers to learn and improve from experience without being explicitly programmed.";
+
+        // Sample prompt for content generation
+        document.getElementById("generation-prompt").value =
+          "Write a professional email to a client explaining a project delay and proposing a new timeline.";
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+# Local development files
+.env
+venv/
+env/
+__pycache__/
+*.pyc
+.git/
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Development databases
+db.sqlite3
+*.sqlite3
+
+# Static files (will be generated during build)
+staticfiles/
+static_root/
+
+# Media files
+media/
+
