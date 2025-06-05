@@ -2,17 +2,17 @@ from django.urls import path
 from .views import (
     SummarizationView, SentimentAnalysisView, KeywordExtractionView, HomeView,
     TextClassificationView, LanguageDetectionView, TextTranslationView,
-    QuestionAnsweringView, ContentGenerationView, health_check
+    QuestionAnsweringView, ContentGenerationView, health_check, db_info
 )
 from .auth_views import (
     login_view, signup_view, logout_view, regenerate_api_key
 )
 
 urlpatterns = [
-   
-    path("", HomeView.as_view(), name="home"),
+     path("", HomeView.as_view(), name="home"),
     path("dashboard/", HomeView.as_view(), name="dashboard"),
     path("health/", health_check, name="health_check"),
+    path("db-info/", db_info, name="db_info"),
     
     # Authentication URLs
     path("login/", login_view, name="login"),

@@ -18,74 +18,97 @@ ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', '.satyamdev.me']
 # Security settings for production
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'same-origin'
+
+# CSRF settings for production
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+
+# Additional security headers
+SECURE_SSL_REDIRECT = not DEBUG
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Database configuration for production
-# Use environment variables for database configuration
-if os.getenv('DATABASE_URL'):
-    try:
-        import dj_database_url
-        DATABASES = {
-            'default': dj_database_url.parse(
+# Supabase PostgreSQL Configuration
+def get_supabase_database_config():
+    """Configure Supabase database with proper connection pooling and SSL"""
+    
+    # First priority: Use DATABASE_URL if provided (standard for many platforms)
+    if os.getenv('DATABASE_URL'):
+        try:
+            import dj_database_url
+            config = dj_database_url.parse(
                 os.getenv('DATABASE_URL'), 
-                conn_max_age=300,
+                conn_max_age=60,  # Shorter for serverless
                 conn_health_checks=True
             )
-        }
-        # Ensure SSL and IPv4 preference for Supabase
-        DATABASES['default']['OPTIONS'] = {
-            'sslmode': 'require',
-            'connect_timeout': 30,
-            'options': '-c default_transaction_isolation=read_committed',
-        }
-    except ImportError:
-        # Fallback to manual configuration if dj_database_url is not available
-        pass
-elif all([
-    os.getenv("SUPABASE_DB_HOST"),
-    os.getenv("SUPABASE_DB_PASSWORD"),
-]):
-    # Try connection pooler first if available
-    db_host = os.getenv("SUPABASE_DB_HOST")
-    db_port = os.getenv("SUPABASE_DB_PORT", "5432")
+            # Ensure proper SSL and connection options for Supabase
+            config['OPTIONS'] = {
+                'sslmode': 'require',
+                'connect_timeout': 10,
+                'application_name': 'django_vercel_app',
+                'options': '-c default_transaction_isolation=read_committed -c timezone=UTC',
+            }
+            return config
+        except ImportError:
+            logger.warning("dj_database_url not available, falling back to manual config")
     
-    # Check if we should use connection pooler for Vercel
-    if os.getenv('VERCEL') and 'supabase.co' in db_host:
-        # Try to use connection pooler if available
-        pooler_host = db_host.replace('db.', 'aws-0-us-east-1.pooler.')
-        if pooler_host != db_host:
-            logger.info(f"Attempting to use Supabase pooler: {pooler_host}")
-            db_host = pooler_host
-            db_port = "6543"  # Default pooler port
-    
-    # Use PostgreSQL if environment variables are available
-    DATABASES = {
-        'default': {
+    # Second priority: Manual Supabase configuration
+    if all([
+        os.getenv("SUPABASE_DB_HOST"),
+        os.getenv("SUPABASE_DB_PASSWORD"),
+    ]):
+        db_host = os.getenv("SUPABASE_DB_HOST")
+        db_port = os.getenv("SUPABASE_DB_PORT", "5432")
+        
+        # Use connection pooler for production (recommended for serverless)
+        if os.getenv('VERCEL') or os.getenv('RAILWAY_ENVIRONMENT'):
+            # Auto-detect and use Supabase connection pooler
+            if 'supabase.co' in db_host and 'db.' in db_host:
+                # Replace db. with aws-0-us-east-1.pooler. for US East region
+                # You may need to adjust the region based on your Supabase project
+                pooler_host = db_host.replace('db.', 'aws-0-us-east-1.pooler.')
+                logger.info(f"Using Supabase connection pooler: {pooler_host}")
+                db_host = pooler_host
+                db_port = "6543"  # Default pooler port
+        
+        return {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv("SUPABASE_DB_NAME", "postgres"),
             'USER': os.getenv("SUPABASE_DB_USER", "postgres"),
             'PASSWORD': os.getenv("SUPABASE_DB_PASSWORD"),
-            'HOST': db_host,  
+            'HOST': db_host,
             'PORT': db_port,
             'OPTIONS': {
-                'connect_timeout': 30,
                 'sslmode': 'require',
-                'options': '-c default_transaction_isolation=read_committed',
-                # Force IPv4 to avoid IPv6 connectivity issues on Vercel
-                'target_session_attrs': 'read-write',
+                'connect_timeout': 10,
+                'application_name': 'django_vercel_app',
+                'options': '-c default_transaction_isolation=read_committed -c timezone=UTC',
+                'keepalives_idle': 600,
+                'keepalives_interval': 30,
+                'keepalives_count': 3,
             },
-            'CONN_MAX_AGE': 300,  # Reduced connection age for better reliability
-            'CONN_HEALTH_CHECKS': True,  # Enable connection health checks
+            'CONN_MAX_AGE': 60,  # Short-lived connections for serverless
+            'CONN_HEALTH_CHECKS': True,
         }
+    
+    # Fallback to SQLite for development
+    return {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-else:
-    # If no database environment variables are set, fall back to SQLite
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
+
+# Set the database configuration
+DATABASES = {
+    'default': get_supabase_database_config()
+}
 
 # Static files configuration for production
 STATIC_URL = '/static/'

@@ -6,6 +6,7 @@ from django.views import View
 from django.middleware.csrf import get_token
 from django.contrib import messages
 from django.http import JsonResponse
+from django.db import connection
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
@@ -44,6 +45,39 @@ def health_check(request):
         'database': health,
         'timestamp': timezone.now().isoformat()
     }, status=status_code)
+
+@require_http_methods(["GET"])
+def db_info(request):
+    """Get detailed database connection information (admin only)"""
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+    
+    try:
+        with connection.cursor() as cursor:
+            # Get connection info
+            cursor.execute("""
+                SELECT 
+                    current_database() as db_name,
+                    current_user as user_name,
+                    inet_server_addr() as server_ip,
+                    inet_server_port() as server_port
+            """)
+            result = cursor.fetchone()
+            
+            # Check if using pooler
+            is_pooler = result[3] == 6543
+            
+            return JsonResponse({
+                'database_name': result[0],
+                'user': result[1],
+                'server_ip': result[2],
+                'server_port': result[3],
+                'using_pooler': is_pooler,
+                'connection_type': 'pooler' if is_pooler else 'direct'
+            })
+            
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 class HomeView(View):
     def get(self, request):
