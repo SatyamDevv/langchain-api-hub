@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 # Add Vercel domain to allowed hosts
-ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', '.satyamdev.me']
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', '.satyamdev.me', 'langchainapihub.satyamdev.me']
 
 # Security settings for production
 SECURE_BROWSER_XSS_FILTER = True
