@@ -4,7 +4,7 @@ This module ensures proper initialization of LangChain models for serverless dep
 """
 
 import os
-from langchain_core.cache import BaseCache  # Import BaseCache to fix undefined annotation error
+from langchain_core.caches import BaseCache  # Import BaseCache to fix undefined annotation error
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dotenv import load_dotenv
 
