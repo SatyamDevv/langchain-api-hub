@@ -1,5 +1,5 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
+from .langchain_init import get_initialized_llm
 
 def generate_content(prompt_text, content_type="general", max_length=500):
     """Generate creative content based on the prompt and content type."""
@@ -49,7 +49,7 @@ Be creative and provide useful, well-written content."""
         template=template
     )
     
-    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.7)
+    llm = get_initialized_llm(model="gemini-2.0-flash", temperature=0.7)
     chain = prompt | llm
     
     try:

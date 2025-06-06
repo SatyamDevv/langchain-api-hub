@@ -1,5 +1,5 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
+from .langchain_init import get_initialized_llm
 
 def answer_question(question, context=None):
     """Answer questions using AI, optionally with provided context."""
@@ -15,7 +15,7 @@ Question: {question}
 Answer:"""
         )
         
-        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.2)
+        llm = get_initialized_llm(model="gemini-2.0-flash", temperature=0.2)
         chain = prompt | llm
         
         try:
@@ -38,7 +38,7 @@ Question: {question}
 Answer:"""
         )
         
-        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.3)
+        llm = get_initialized_llm(model="gemini-2.0-flash", temperature=0.3)
         chain = prompt | llm
         
         try:

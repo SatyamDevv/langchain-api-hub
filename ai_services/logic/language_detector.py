@@ -1,5 +1,5 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
+from .langchain_init import get_initialized_llm
 
 def detect_language(text):
     """Detect the language of the input text using AI."""
@@ -15,7 +15,7 @@ For example: "English (en)" or "Spanish (es)" or "French (fr)"
 If the text contains multiple languages, identify the dominant language."""
     )
     
-    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.1)
+    llm = get_initialized_llm(model="gemini-2.0-flash", temperature=0.1)
     chain = prompt | llm
     
     try:

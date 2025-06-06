@@ -1,11 +1,11 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import CommaSeparatedListOutputParser
+from .langchain_init import get_initialized_llm
 
 def extract_keywords(text, count=5):
     """Extract keywords from text using Google's Generative AI."""
-    # Use Gemini Pro model instead of text-bison-001
-    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.2)
+    # Use centralized LLM initialization
+    llm = get_initialized_llm(model="gemini-2.0-flash", temperature=0.2)
     
     # Create output parser
     output_parser = CommaSeparatedListOutputParser()

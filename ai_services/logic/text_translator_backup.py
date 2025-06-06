@@ -35,8 +35,7 @@ Text to translate: {text}
 
 Provide only the translation without any additional explanation."""
         )
-        
-        llm = get_initialized_llm(model="gemini-2.0-flash", temperature=0.1)
+          llm = get_initialized_llm(model="gemini-2.0-flash", temperature=0.1)
         result = prompt | llm
         
         try:

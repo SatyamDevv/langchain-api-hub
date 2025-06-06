@@ -1,5 +1,5 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
+from .langchain_init import get_initialized_llm
 
 def classify_text(text, categories=None):
     """Classify text into predefined categories using AI."""
@@ -17,7 +17,7 @@ Text: {text}
 Respond with only the category name that best fits the text content. Choose the most appropriate category from the list provided."""
     )
     
-    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0.1)
+    llm = get_initialized_llm(model="gemini-2.0-flash", temperature=0.1)
     chain = prompt | llm
     
     try:
