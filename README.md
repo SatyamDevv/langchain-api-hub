@@ -1,4 +1,4 @@
-# 🤖 AI Services Hub
+# 🤖 Langchain API Hub
 
 A comprehensive Django-based AI services platform with user authentication, API key management, and 8 powerful AI-powered text processing APIs.
 
